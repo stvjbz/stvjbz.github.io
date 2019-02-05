@@ -1,31 +1,98 @@
-﻿<html>
+<!DOCTYPE html>
+<html lang="en">
+
 <head>
-  <!-- manifest.jsonを呼び出しています -->
-  <link rel="manifest" href="./manifest.json">
-  <link rel="apple-touch-icon" href="./icon-192.png" sizes="192x192"/>
-  <script>
-    // service workerが有効なら、service-worker.js を登録します
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./service-worker.js').then(function() { console.log('Service Worker Registered'); });
-   }
-  </script>
-  <title>Hello PWA.</title>
-  <style>
-    body {
-      text-align:center;
-      font-size: 40px;
-      vertical-align: middle;
-    }
-    .image {
-      width: 80%;
-      margin: auto;
-      display: block;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="dist/css/font-awesome.min.css">
+    <link rel="stylesheet" href="dist/css/style.css">
+    <title>Todo list</title>
+
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="./icon-192.png" sizes="192x192"/>
+
+<script>
+// service workerが有効なら、service-worker.js を登録します
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./service-worker.js').then(function() { console.log('Service Worker Registered'); });
+}
+</script>
 </head>
 <body>
-  <h1>Hello PWA.</h1>
-  <img src="./pwa-logo.svg" alt="PWA logo" class="image" />
-  <a href="p.html">p.html</a>
+    <div id="app" class="container">
+        <div class="todo-wrapper">
+            <todo-header></todo-header>
+            <div class="todo-content">
+                <todo-report></todo-report>
+                <todo-list :collection="listState.items"></todo-list>
+            </div>
+        </div>
+    </div>
+
+    <!-- Todo Header -->
+    <template id="todo-header">
+        <div class="todo-header">
+            <div class="overlay"></div>
+            <time class="clearfix">
+                <span class="day">{{ date }}</span>
+                <span class="dayofweek">{{ weekDay }}</span>
+                <span class="month">{{ month }}, {{ year }}</span>
+            </time>
+            <div class="add-circle" @click="add">
+                <i class="fa fa-plus"></i>
+            </div>
+        </div>
+    </template>
+
+    <!-- Todo Report -->
+    <template id="todo-report">
+        <div class="todo-content-title">
+            <h2>Your tasks</h2>
+            <p class="task-report"><span class="task-remain">{{ taskDone }} done</span> / {{ taskTotal }} task(s)</p>
+        </div>
+    </template>
+
+    <!-- Todo List -->
+    <template id="todo-list">
+        <ul class="todo-list">
+            <todo-item v-for="item in collection" :model="item"></todo-item>
+        </ul>
+    </template>
+
+    <!-- Todo Item -->
+    <template id="todo-item">
+        <li class="todo-item" :class="{'editing': model.isEditing, 'task-done': isDone}">
+            <span @click="showLabel" class="label {{ model.label }}">
+                <ul class="action-pick-label action-popup">
+                    <li @click="saveLabel('urgent')" class="important">Important</li>
+                    <li @click="saveLabel('normal')" class="normal">Normal</li>
+                    <li @click="saveLabel('other')" class="other">Whatever</li>
+                </ul>
+            </span>
+
+            <p class="text" v-if="model.isEditing">
+                <input type="text" v-model="tempText" placeholder="Type a new task and hit enter" @keyup.enter="save">
+            </p>
+
+            <p class="text" v-if="model.isEditing == false">{{ model.text }}</p>
+
+            <!-- Task action -->
+            <div class="todo-action" @click="showAction" v-if="model.isEditing == false || model.isEditing == null">
+                 <span class="more">
+                   <span></span><span></span><span></span>
+                 </span>
+
+                <ul class="action-list action-popup">
+                    <li @click="markDone" v-if="!isDone">Mark done</li>
+                    <li @click="edit" v-if="!isDone">Edit</li>
+                    <li @click="delete">Delete</li>
+                </ul>
+            </div>
+        </li>
+        <!-- End .task-action -->
+    </template>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/1.0.24/vue.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="dist/js/script.js"></script>
 </body>
 </html>
