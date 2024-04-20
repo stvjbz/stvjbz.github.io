@@ -91,6 +91,23 @@ if ('serviceWorker' in navigator) {
         <!-- End .task-action -->
     </template>
 
+    <iframe id="youtubePlayer" width="560" height="315" src="https://www.youtube.com/embed/m7LvNTbaqSI" frameborder="0" allowfullscreen></iframe>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+        const player = document.getElementById('youtubePlayer');
+        if (player.requestFullscreen) {
+            player.requestFullscreen();
+            console.log("requestFullscreen");
+        } else if (player.webkitRequestFullscreen) { /* Safari */
+            player.webkitRequestFullscreen();
+            console.log("webkitRequestFullscreen");
+        } else if (player.msRequestFullscreen) { /* IE11 */
+            player.msRequestFullscreen();
+            console.log("msRequestFullscreen");
+        }
+    });
+    </script>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/1.0.24/vue.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src="dist/js/script.js"></script>
